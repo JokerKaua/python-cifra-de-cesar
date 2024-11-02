@@ -36,7 +36,7 @@ class CifraCesar:
         # return dtext if dtext == self.text else None #Caso o texto decifrado não seja igual o texto original, retornará nada
         return self.cifrar(-chave)
     
-    def forcabruta(self, words_file_path='./palavras.txt') -> list | None:
+    def forcabruta(self, words_file_path='./palavras.txt') -> list | None | dict:
         with open(words_file_path, 'r', encoding='UTF-8') as file:
             palavras = file.read().split()
         
@@ -52,6 +52,19 @@ class CifraCesar:
                     break
                 chave+=1
 
-        c = max(chaves, key=chaves.get) if chaves else 0 # Caso possua algo em chaves
+        c = 0
+        if chaves:
+            s = set()
+            for k in chaves.values(): 
+               s.add(k)
+            if len(s) == 1 and len(chaves) > 1: #Retorna todas as chaves encontradas e os textos
+                r = {}
+                for i in chaves.keys():
+                    r.update({i: self.cifrar(-i)})
+                return r
+            else:
+                c = max(chaves, key=chaves.get) # Caso possua algo em chaves
+
+
         return [c, self.cifrar(-c)] if c>0 else None #Retorna None caso não tenha conseguido encontrar nenhuma chave correspondente
 

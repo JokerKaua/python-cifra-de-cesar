@@ -90,8 +90,12 @@ if __name__ == "__main__":
             elif configs['modo'] == 'forcabruta':
                 print(f'Método de força bruta: \nDecifrando o texto: \n{cifra.text}\n')
                 decifrado = cifra.forcabruta()
-                if decifrado != None:
+                if type(decifrado) == list:
                     print(f'Encontrado cifra com a chave {decifrado[0]}\nTexto decifrado:\n{decifrado[1]}\n')
+                elif type(decifrado) == dict:
+                    print('Mais de uma chave encontrada para o texto.')
+                    for chave, texto in decifrado.items():
+                        print(f'\nChave: {chave}\nTexto:{texto}')
                 else:
                     print('Nenhuma chave para o texto foi encontrada.\n')
         else: # -1
