@@ -8,10 +8,20 @@ import json
 def saveJsonFile(jsonDict: dict, filePath='config.json'): 
     with open(filePath, 'w', encoding='UTF-8') as file:
         json.dump(jsonDict, file)
+    return
 
 def saveTextFile(text: str, filePath='text.txt'):
     with open(filePath, 'w', encoding='UTF-8') as file:
         file.write(text)
+    return
+
+def openTextFile(filePath: str) -> str:
+    with open(filePath, 'r', encoding='UTF-8') as file:
+       return file.read()
+    
+def openJsonFile(filePath: str) -> dict:
+    with open(filePath, 'r', encoding='UTF-8') as file:
+        return json.load(file)
 
 if __name__ == "__main__":
 
@@ -60,17 +70,12 @@ if __name__ == "__main__":
                     saveTextFile(dtext)
                 else:
                     print('\nSelecione um opção válida\n')
-        elif op == 2: # Cifrar e decifrar de acordo com os 
+        elif op == 2: # Cifrar e decifrar de acordo com os arquivos
             print("\x1b[2J\x1b[1;1H", end="") #Código de escape para limpar a tela
-            # Pegando dados do config.json
-            with open('config.json', 'r') as file:
-                configs: dict = json.load(file)
-            # Pegando dados do text.txt
-            with open('text.txt', 'r', encoding='UTF-8') as file:
-                texts = file.read()
-            # Pegando palavras da base de dados no arquivo de palavras.txt
-            with open('palavras.txt', 'r', encoding='UTF-8') as file:
-                palavras = file.read().split()
+
+            configs = openJsonFile('config.json')
+            texts = openTextFile('text.txt')
+            palavras = openTextFile('palavras.txt').split()
 
             cifra = CifraCesar(texts)
 
