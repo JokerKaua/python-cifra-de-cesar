@@ -1,28 +1,93 @@
+"""
+    Kauã Felipe Martins - 02/11/2024
+"""
+
 from CifraCesar import CifraCesar
 import json
 
+def saveJsonFile(jsonDict: dict, filePath='config.json'): 
+    with open(filePath, 'w', encoding='UTF-8') as file:
+        json.dump(jsonDict, file)
+
+def saveTextFile(text: str, filePath='text.txt'):
+    with open(filePath, 'w', encoding='UTF-8') as file:
+        file.write(text)
+
 if __name__ == "__main__":
-    #Pegando dados do config.json
-    with open('config.json', 'r') as file:
-        configs = json.load(file)
-    #Pegando dados do text.txt    
-    with open('text.txt', 'r', encoding='UTF-8') as file:
-        texts = file.read()
 
-    with open('palavras.txt', 'r', encoding='UTF-8') as file:
-        palavras = file.read().split()
+    print("\x1b[2J\x1b[1;1H", end="") #Código de escape para limpar a tela
 
-    cifra = CifraCesar(texts)
-    chave = configs['chave'] if configs.__contains__('chave') else 0
+    while True:
+        op = input(f'Selecione uma opção\n1. Cifrar e decifrar manualmente (salvando text.txt e cconfig.json)\n2. Ir pelos arquivos de text.txt e config.json\n0. Sair\n')
+        if op.isnumeric(): #Caso a opção for um numero, converter para int
+            op = int(op)
+        else: # Padrão = -1 para toda opção inválida
+            op = -1
+        
+        if op == 0:
+            break
+        if op == 1: # Cifrar e decifrar manualmente
+            while True:
+                print("\x1b[2J\x1b[1;1H", end="") #Código de escape para limpar a tela
+                print('\nSelecione uma opção\n1. Cifrar\n2. Decifrar\n0. Sair')
+                op = int(input())
+                if op == 0:
+                    break
+                elif op == 1:
+                    text = input('Digite o texto: ')
+                    chave = int(input('Digite a chave: '))
+                    cifra = CifraCesar(text)
+                    textoCifrado = cifra.cifrar(chave)
+                    
+                    print(f'Texto cifrado: {textoCifrado}\n\nSalvando configuração em "config.json"')
+                    saveConfig = input('Salvar para "forcabruta"? [s] / [n]')
 
-    if configs['modo'] == 'cifrar':
-        print(f'Cifrando o texto "{cifra.text}" com a chave {chave}\nTexto cifrado: {cifra.cifrar(chave)}\n')
-    elif configs['modo'] == 'decifrar':
-        print(f'Decifrando o texto "{cifra.text}" com a chave {chave}\nTexto decifrado: {cifra.decifrar(chave)}\n')
-    elif configs['modo'] == 'forcabruta':
-        print(f'Método de força bruta: \nDecifrando o texto: \n{cifra.text}\n')
-        decifrado = cifra.forcabruta()
-        if decifrado != None:
-            print(f'Encontrado cifra com a chave {decifrado[0]}\nTexto decifrado:\n{decifrado[1]}')
-        else:
-            print('Nenhuma chave para o texto foi encontrada.')
+                    if saveConfig.lower() == 's':
+                        config = {'modo':'forcabruta'}
+                    else: #Se o input for qualquer coisa diferente de 's', será salvo o modo e a chave como padrão. 
+                        config = {'modo':'decifrar', 'chave':chave}
+                        
+                    saveJsonFile(config)
+                    saveTextFile(textoCifrado)
+                elif op == 2:
+                    text = input('Digite o texto: ')
+                    chave = int(input('Digite a chave: '))
+                    cifra = CifraCesar(text)
+                    dtext = cifra.decifrar(chave)
+
+                    print(f'Texto decifrado: {dtext}\n\nSalvando configuração em "config.json"')       
+                    saveJsonFile({'modo':'cifrar', 'chave': chave})
+                    saveTextFile(dtext)
+                else:
+                    print('\nSelecione um opção válida\n')
+        elif op == 2: # Cifrar e decifrar de acordo com os 
+            print("\x1b[2J\x1b[1;1H", end="") #Código de escape para limpar a tela
+            # Pegando dados do config.json
+            with open('config.json', 'r') as file:
+                configs: dict = json.load(file)
+            # Pegando dados do text.txt
+            with open('text.txt', 'r', encoding='UTF-8') as file:
+                texts = file.read()
+            # Pegando palavras da base de dados no arquivo de palavras.txt
+            with open('palavras.txt', 'r', encoding='UTF-8') as file:
+                palavras = file.read().split()
+
+            cifra = CifraCesar(texts)
+
+            if configs['modo'] == 'cifrar':
+                chave = configs['chave']
+                print(f'Cifrando o texto: \n{cifra.text}\n\nChave {chave}\nTexto cifrado: \n{cifra.cifrar(chave)}\n')
+
+            elif configs['modo'] == 'decifrar':
+                chave = configs['chave']
+                print(f'Decifrando o texto abaixo com a chave {chave}\n\n{cifra.text}\n\nTexto decifrado: {cifra.decifrar(chave)}\n')
+
+            elif configs['modo'] == 'forcabruta':
+                print(f'Método de força bruta: \nDecifrando o texto: \n{cifra.text}\n')
+                decifrado = cifra.forcabruta()
+                if decifrado != None:
+                    print(f'Encontrado cifra com a chave {decifrado[0]}\nTexto decifrado:\n{decifrado[1]}\n')
+                else:
+                    print('Nenhuma chave para o texto foi encontrada.\n')
+        else: # -1
+            print('\x1b[2J\x1b[1;1HDigite uma opção válida!\n')

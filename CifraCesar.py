@@ -1,6 +1,5 @@
 class CifraCesar:
     text: str
-    ctext: str
     # chave: int
 
     def __init__(self, text:str) -> None:
@@ -9,7 +8,6 @@ class CifraCesar:
 
     def cifrar(self, chave: int) -> str:
         ctext = ""
-        
         if chave>26 or chave<-26:
             chave = chave%26
             
@@ -31,47 +29,29 @@ class CifraCesar:
                     ctext += chr(charAscii)
             else:
                 ctext += char
-        self.ctext = ctext
         return ctext
 
     def decifrar(self, chave: int) -> str | None:
-        dtext = self.cifrar(-chave)
-        return dtext if dtext == self.text else None #Caso o texto decifrado não seja igual o texto original, retornará nada
+        # dtext = self.cifrar(-chave)
+        # return dtext if dtext == self.text else None #Caso o texto decifrado não seja igual o texto original, retornará nada
+        return self.cifrar(-chave)
     
     def forcabruta(self, words_file_path='./palavras.txt') -> list | None:
-        texts = self.text.split()
-
         with open(words_file_path, 'r', encoding='UTF-8') as file:
             palavras = file.read().split()
         
-        # print(texts)
-        # print(palavras)
-
         chaves = {}
 
-        for i in range(len(texts)):
-            palavra = texts[i]
-            chave = 0
-
-            while chave<=26:
-                # chaves.update({chave: 0})
-
-                # print(f'Chave: {chave}\n Palavra: {palavra}')
-                dpalavra = CifraCesar(palavra).cifrar(-chave)
-                # print(f' Decifrada: {dpalavra}')
-                
-                if(dpalavra in palavras):
-                    # print('palavra in palavras encontrado!!!')
-                    chaves.update({chave: chaves[chave]+1} if chaves.__contains__(chave) else {chave: 1})
+        for palavra in self.text.split():
+            chave=0
+            while chave<27:
+                dtext = CifraCesar(palavra).cifrar(-chave)
+                if dtext in palavras and len(dtext) > 2: # Testa apenas as palavras com mais de duas letras
+                    # chaves.update({chave: (chaves[chave]+1 if chaves.__contains__(chave) else 1)})
+                    chaves[chave] = chaves.get(chave, 0) + 1
                     break
-
                 chave+=1
-        # print('\n\nChaves: \n')
-        print(chaves)
-        # print(max(chaves.values()))
-        c = max(chaves, key=chaves.get)
-        # print(f'chave: {c}')
 
+        c = max(chaves, key=chaves.get) if chaves else 0 # Caso possua algo em chaves
         return [c, self.cifrar(-c)] if c>0 else None #Retorna None caso não tenha conseguido encontrar nenhuma chave correspondente
 
-            

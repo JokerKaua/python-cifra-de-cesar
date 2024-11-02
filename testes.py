@@ -1,9 +1,7 @@
 from CifraCesar import CifraCesar
 
-#chave 3
-cifra = CifraCesar("Whvwdqgr sru txh hx txhur idchu lvvr")
-
-# print(cifra.cifrar(3))
+#chave 4 - "Teste de texto para decifrar" - "Xiwxi hi xibxs teve higmjvev"
+cifra = CifraCesar("Xiwxi hi xibxs teve higmjvev")
 
 forcabruta = cifra.forcabruta()
 
